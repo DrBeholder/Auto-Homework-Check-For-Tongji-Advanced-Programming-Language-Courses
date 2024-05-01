@@ -2,27 +2,41 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
-#include "datapack.cpp"
-#include "Check.cpp"
 using namespace std;
+extern string datapack(char a, string b);
+extern string check(int a, string b, bool d);
+extern void output(string name, bool c);
+
 
 int main() {
-	cout << "Auto-Homework_Check [版本 0.1.1-Alpha]" << endl;
+	cout << "Auto-Homework_Check [版本 0.2.0]" << endl;
 	cout << "Copyright (c) 2024 Beholder. " << endl << endl;
 	string name, full_Name_Data, full_Name_Bat;    //作业代号，数据集文件名和批处理文件名
 	string data_Pack, bat_Pack;          //生成的数据集和批处理文件
 	char data_Type;       //需要的数据类型
-	int place, size;            //\n位置
-
+	int place, size;     //\n位置
+	int double_language_1; 
+	bool double_language;//是否需要C/C++双语言
 
 	//作业代号
 	cout << "输入作业代号" << endl;
 	cin >> name;
-
-
+	//作业要求
+	input_1:
+	cout << "此次作业是否要求C/C++双方式？（0为否，1为是）" << endl;
+	cin >> double_language_1;
+	if (cin.fail() || (double_language_1 !=0 && double_language_1 != 1)) {
+		cout << "输入错误，请重新输入" << endl;
+		cin.clear();
+		cin.ignore();
+		goto input_1;
+	}
+	else {
+		double_language = bool(double_language_1);
+	}
 	//数据类型
 	input:
-	cout << "输入需要的数据类型（整型为n，浮点型为f）" << endl;
+	cout << "输入需要的数据类型（整型为n，浮点型为f，字符型为c，其他输入无效）" << endl;
 	cin >> data_Type;
 
 	if (cin.fail()) {
@@ -32,7 +46,7 @@ int main() {
 		goto input;
 	}
 
-	if ((data_Type != 'f') && (data_Type != 'n')) {
+	if ((data_Type != 'f') && (data_Type != 'n') && (data_Type != 'c')) {
 		cout << "数据类型无效，请重新输入" << endl;
 		goto input;
 	}
@@ -58,7 +72,6 @@ int main() {
 		cout << "生成的数据集过大，运行时间可能很长，是否继续？（1或0）" << endl;
 		cin >> confirm;
 		if (cin.fail()) {
-			cout << "是否继续 回答不正确 请重新回答" << endl;
 			cin.clear();
 			cin.ignore();
 			goto confirmA;
@@ -70,7 +83,7 @@ int main() {
 		
 	
 	//批处理文件生成
-	bat_Pack = check(size, name);            //生成批处理文件并存放在变量中
+	bat_Pack = check(size, name, double_language);            //生成批处理文件并存放在变量中
 	full_Name_Bat = name + "-check.bat";     //利用作业代号生成批处理文件名
 
 
@@ -94,13 +107,7 @@ int main() {
 	system("del *.bat");
 	system("cls");
 
-	cout << "运行完成，以下四项依次为"<< name << "-1.exe, "<< name << "-1-VS.exe, "<< name << "-2.exe, "<< name << "-2-VS.exe与"<< name << "-demo.exe运行结果的比较：\n" << endl;
-	string log = "type " + name + "-comparison.log";
-	system(log.c_str());
-	cout << endl;
-	cout << "本次运行生成的数据集可在" << name << "-0-data.txt中找到\n老师示范程序的输出可在" 
-		 << name << "-0-result.log中找到\n被检程序的输出可在(各自名称)-answer.log中找到\n完整比较结果可在"
-		 << name << "-compaison.log中找到\n" << endl;
+	output(name, double_language);
 	cout << "程序运行结束，按任意键退出\n注意：退出后将清理本次生成的数据集，程序输出结果和比较结果";
 	system("pause > nul");
 	system("del *.txt");
